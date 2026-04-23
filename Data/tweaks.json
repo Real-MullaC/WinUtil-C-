@@ -846,25 +846,7 @@
     "category": "Essential Tweaks",
     "panel": "1",
     "Checked": "False",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore",
-        "Name": "SystemRestorePointCreationFrequency",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "1440"
-      }
-    ],
-    "InvokeScript": [
-      "
-      if (-not (Get-ComputerRestorePoint)) {
-          Enable-ComputerRestore -Drive $Env:SystemDrive
-      }
-
-      Checkpoint-Computer -Description \"System Restore Point created by WinUtil\" -RestorePointType MODIFY_SETTINGS
-      Write-Host \"System Restore Point Created Successfully\" -ForegroundColor Green
-      "
-    ],
+    "ps1FileName": "RestorePoint.ps1",
     "link": "https://winutil.christitus.com/dev/tweaks/essential-tweaks/restorepoint"
   },
   "WPFTweaksEndTaskOnTaskbar": {
@@ -1710,14 +1692,6 @@
     "panel": "1",
     "Type": "Button",
     "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/oosubutton"
-  },
-  "WPFchangedns": {
-    "Content": "DNS - Set to:",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Type": "Combobox",
-    "ComboItems": "Default DHCP Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Open_DNS Quad9 AdGuard_Ads_Trackers AdGuard_Ads_Trackers_Malware_Adult",
-    "link": "https://winutil.christitus.com/dev/tweaks/z--advanced-tweaks---caution/changedns"
   },
   "WPFAddUltPerf": {
     "Content": "Ultimate Performance Profile - Enable",
