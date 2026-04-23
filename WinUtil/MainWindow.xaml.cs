@@ -1,104 +1,89 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
+using System.Net.NetworkInformation;
 using System.Windows;
-using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace WinUtil
 {
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
     public partial class MainWindow : Window
     {
-        // This is the source for your UI items
-        public ObservableCollection<WingetApp> Apps { get; set; } = new();
-
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = this; // Necessary for {Binding} to work
-            LoadData();
+
+            // Run the connection check after the UI has initialized
+            CheckInternetAndArrangeTabs();
         }
 
-        private void LoadData()
+        private void CheckInternetAndArrangeTabs()
         {
-            Apps.Add(new WingetApp { Name = "Google Chrome", AppId = "Google.Chrome", IconPath = "https://www.google.com/chrome/static/images/chrome-logo.svg" });
-            Apps.Add(new WingetApp { Name = "Discord", AppId = "Discord.Discord", IconPath = "https://assets-global.website-files.com/6257adef93867e3c84519eb1/6257adef93867e0763519f43_847541504914fd33810e70a0ea73177e.ico" });
-            Apps.Add(new WingetApp { Name = "Visual Studio Code", AppId = "Microsoft.VisualStudioCode", IconPath = "https://code.visualstudio.com/apple-touch-icon.png" });
-        }
+            bool hasInternet = IsConnected();
 
-        private async void InstallButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button { DataContext: WingetApp app })
+            if (hasInternet)
             {
-                app.IsInstalling = true;
-                app.IsIndeterminate = true;
-
-                try
+                // If internet is found, default to the INSTALL tab (Index 0)
+                if (MainTabs != null)
                 {
-                    ProcessStartInfo startInfo = new ProcessStartInfo
-                    {
-                        FileName = "winget",
-                        Arguments = $"install --id {app.AppId} --silent --accept-source-agreements --accept-package-agreements",
-                        UseShellExecute = false,
-                        CreateNoWindow = true
-                    };
-
-                    using (Process? process = Process.Start(startInfo))
-                    {
-                        if (process != null)
-                        {
-                            await Task.Delay(2000); // Simulated delay for visual feedback
-                            app.IsIndeterminate = false;
-                            app.InstallProgress = 100;
-                            await process.WaitForExitAsync();
-                        }
-                    }
+                    MainTabs.SelectedIndex = 0;
                 }
-                catch (Exception ex)
+            }
+            else
+            {
+                // If no internet, remove the Install tab entirely
+                // This ensures the user can only see and use the TWEAKS tab
+                if (MainTabs != null && InstallTab != null)
                 {
-                    MessageBox.Show($"Failed to start winget: {ex.Message}");
-                }
-                finally
-                {
-                    app.IsInstalling = false;
+                    MainTabs.Items.Remove(InstallTab);
+
+                    // After removal, the Tweaks tab becomes the new Index 0
+                    MainTabs.SelectedIndex = 0;
                 }
             }
         }
-    }
 
-    // This class MUST be public so XAML can see it
-    public class WingetApp : INotifyPropertyChanged
-    {
-        public string Name { get; set; } = string.Empty;
-        public string AppId { get; set; } = string.Empty;
-        public string IconPath { get; set; } = string.Empty;
-
-        private bool _isInstalling;
-        public bool IsInstalling
+        /// <summary>
+        /// Attempts to ping Cloudflare's DNS to verify active internet connection.
+        /// </summary>
+        private bool IsConnected()
         {
-            get => _isInstalling;
-            set
+            try
             {
-                _isInstalling = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(ButtonVisibility));
-                OnPropertyChanged(nameof(ProgressVisibility));
+                using (Ping p = new Ping())
+                {
+                    // 1.1.1.1 is Cloudflare's DNS; 1500ms timeout
+                    PingReply reply = p.Send("1.1.1.1", 1500);
+                    return reply.Status == IPStatus.Success;
+                }
+            }
+            catch
+            {
+                // If ping fails or network is unreachable
+                return false;
             }
         }
 
-        public Visibility ButtonVisibility => IsInstalling ? Visibility.Collapsed : Visibility.Visible;
-        public Visibility ProgressVisibility => IsInstalling ? Visibility.Visible : Visibility.Collapsed;
+        // --- Window Control Logic ---
 
-        private double _installProgress;
-        public double InstallProgress { get => _installProgress; set { _installProgress = value; OnPropertyChanged(); } }
+        private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            // Allows the user to drag the custom window
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                DragMove();
+            }
+        }
 
-        private bool _isIndeterminate;
-        public bool IsIndeterminate { get => _isIndeterminate; set { _isIndeterminate = value; OnPropertyChanged(); } }
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string? name = null)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        private void Minimize_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
     }
 }
