@@ -1,21 +1,36 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
-name: .NET
+name: .NET Release Build
 
 on:
   workflow_dispatch:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+    # Grant permissions to create a release
+    permissions:
+      contents: write
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Important for accurate release note generation
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 10.0
+        
     - name: Build
-      run: dotnet publish -r win-x64 -c Release --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true
+      working-directory: ./WinUtil
+      run: dotnet publish -r win-x64 -c Release --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true -o ../publish
+
+    - name: Create Draft Release
+      uses: softprops/action-gh-release@v2
+      with:
+        # Define the tag name (e.g., v1.0.0 or a timestamp)
+        tag_name: v${{ github.run_number }}
+        name: Release v${{ github.run_number }}
+        draft: true
+        generate_release_notes: true
+        files: |
+          publish/WinUtil.exe
