@@ -2,3 +2,7 @@
 /WinUtil/bin
 /WinUtil/obj/Debug
 /WinUtil/obj
+/WinUtil/single-exe-test
+/WinUtil/Properties
+WinUtil/WinUtil.csproj.user
+WinUtil/WinUtil.csproj.user

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.NetworkInformation;
+﻿using System.Net.Http;
 using System.Windows;
 using System.Windows.Input;
 
@@ -18,9 +17,9 @@ namespace WinUtil
             CheckInternetAndArrangeTabs();
         }
 
-        private void CheckInternetAndArrangeTabs()
+        private async void CheckInternetAndArrangeTabs()
         {
-            bool hasInternet = IsConnected();
+            bool hasInternet = await IsConnected();
 
             if (hasInternet)
             {
@@ -43,25 +42,23 @@ namespace WinUtil
                 }
             }
         }
-
-        /// <summary>
-        /// Attempts to ping Cloudflare's DNS to verify active internet connection.
-        /// </summary>
-        private bool IsConnected()
+        private async Task<bool> IsConnected()
         {
-            try
+            using (var client = new HttpClient())
             {
-                using (Ping p = new Ping())
+                try
                 {
-                    // 1.1.1.1 is Cloudflare's DNS; 1500ms timeout
-                    PingReply reply = p.Send("1.1.1.1", 1500);
-                    return reply.Status == IPStatus.Success;
+                    // We send a request to a reliable endpoint
+                    var response = await client.GetAsync("https://google.com");
+
+                    // Returns true if the status code is 200-299
+                    return response.IsSuccessStatusCode;
                 }
-            }
-            catch
-            {
-                // If ping fails or network is unreachable
-                return false;
+                catch
+                {
+                    // If the request fails (no internet, DNS issues, etc.)
+                    return false;
+                }
             }
         }
 

@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="WinUtil.Views.Updates"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="1100">
+
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,15">
+            <TextBlock x:Name="StatusLabel" Grid.Row="1" Text="Updates" Foreground="#0078D4" FontSize="14" FontWeight="SemiBold" Margin="5,0,0,10"/>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+            <UniformGrid Columns="3" Margin="10">
+
+                <Border Background="#1A1A1A" CornerRadius="8" BorderBrush="#252525" BorderThickness="1" Margin="10" Padding="20">
+                    <StackPanel>
+                        <Button Content="Default Settings" Style="{StaticResource RoundedButtonStyle}" Height="35" Margin="0,0,0,20" Click="DefaultSettings"/>
+                        <TextBlock Text="Default Windows Update Configuration" Foreground="White" FontWeight="Bold" Margin="0,0,0,5"/>
+                        <TextBlock Text="- No modifications to Windows defaults" Foreground="#CCCCCC" Margin="0,0,0,2"/>
+                        <TextBlock Text="- Removes any custom update settings" Foreground="#CCCCCC" Margin="0,0,0,20"/>
+                        <TextBlock Text="Note: This resets your Windows Update settings..." Foreground="Gray" FontStyle="Italic" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="#1A1A1A" CornerRadius="8" BorderBrush="#252525" BorderThickness="1" Margin="10" Padding="20">
+                    <StackPanel>
+                        <Button Content="Security Settings" Style="{StaticResource RoundedButtonStyle}" Height="35" Margin="0,0,0,20" Click="SecuritySettings"/>
+                        <TextBlock Text="Balanced Security Configuration" Foreground="White" FontWeight="Bold" Margin="0,0,0,5"/>
+                        <TextBlock Text="- Feature updates delayed by 365 days" Foreground="#CCCCCC"/>
+                        <TextBlock Text="- Security updates installed after 4 days" Foreground="#CCCCCC"/>
+                        <TextBlock Text="- Prevents Windows Update from installing drivers" Foreground="#CCCCCC" Margin="0,0,0,20"/>
+                        <TextBlock Text="Note: This only applies to Pro systems..." Foreground="Gray" FontStyle="Italic" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="#1A1A1A" CornerRadius="8" BorderBrush="#252525" BorderThickness="1" Margin="10" Padding="20">
+                    <StackPanel>
+                        <Button Content="Disable All Updates" Foreground="Red" Style="{StaticResource RoundedButtonStyle}" Height="35" Margin="0,0,0,20" Click="DisableSettings"/>
+                        <TextBlock Text="!! Not Recommended !!" Foreground="Red" FontWeight="Bold" Margin="0,0,0,5"/>
+                        <TextBlock Text="- Disables ALL Windows Updates" Foreground="#CCCCCC"/>
+                        <TextBlock Text="- Increases security risks" Foreground="#CCCCCC"/>
+                        <TextBlock Text="- Only use for isolated systems" Foreground="#CCCCCC" Margin="0,0,0,20"/>
+                        <TextBlock Text="Warning: Your system will be vulnerable..." Foreground="Gray" FontStyle="Italic" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+            </UniformGrid>
+        </ScrollViewer>
+
+
+    </Grid>
+</UserControl>
