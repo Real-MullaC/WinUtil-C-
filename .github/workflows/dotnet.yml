@@ -22,7 +22,7 @@ jobs:
         
     - name: Build
       working-directory: ./WinUtil
-      run: dotnet publish -r win-x64 -c Release --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true -o ../publish
+      run: dotnet publish -r win-x64 -c Release --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true /p:EnableWindowsTargeting=true -o ../publish
 
     - name: Create Draft Release
       uses: softprops/action-gh-release@v2
